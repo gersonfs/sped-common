@@ -23,13 +23,17 @@ class Asn1
      * Get CNPJ owner number from digital certificate
      * (more specifically, from public key)
      * @param string $publickeyUnformated
-     * @return string CNPJ
+     * @return string|null CNPJ
      */
     public static function getCNPJ($publickeyUnformated)
     {
         //CNPJ
         //OID = 2.16.76.1.3.3
-        return self::getOIDdata('2.16.76.1.3.3', $publickeyUnformated);
+        $cnpj = self::getOIDdata('2.16.76.1.3.3', $publickeyUnformated);
+        if (empty($cnpj)) {
+            return null;
+        }
+        return $cnpj;
     }
 
     /**
@@ -52,13 +56,19 @@ class Asn1
      * Get CPF owner number from digital certificate
      * (more specifically, from public key)
      * @param string $publickeyUnformated
-     * @return string CPF
+     * @return string|null CPF
      */
     public static function getCPF($publickeyUnformated)
     {
         //CPF
         //OID = 2.16.76.1.3.1
-        return self::getOIDdata('2.16.76.1.3.1', $publickeyUnformated);
+        $resp = self::getOIDdata('2.16.76.1.3.1', $publickeyUnformated);
+        if (empty($resp)) {
+            return null;
+        }
+        $dataNascimento = substr($resp, 0, 8);
+        $cpf = substr($resp, 8, 11);
+        return $cpf;
     }
 
     /**

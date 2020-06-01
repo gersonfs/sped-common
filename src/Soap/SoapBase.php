@@ -1,4 +1,5 @@
 <?php
+
 namespace NFePHP\Common\Soap;
 
 use NFePHP\Common\Certificate;
@@ -13,7 +14,7 @@ use Psr\Log\LoggerInterface;
  *
  * @category  NFePHP
  * @package   NFePHP\Common\Soap\SoapBase
- * @copyright NFePHP Copyright (c) 2017
+ * @copyright NFePHP Copyright (c) 2017-2019
  * @author    Roberto L. Machado <linux.rlm at gmail dot com>
  * @license   http://www.gnu.org/licenses/lgpl.txt LGPLv3+
  * @license   https://opensource.org/licenses/MIT MIT
@@ -111,6 +112,10 @@ abstract class SoapBase implements SoapInterface
      */
     protected $encriptPrivateKey = false;
     /**
+     * @var integer
+     */
+    protected $httpver;
+    /**
      * @var bool
      */
     protected $debugmode = false;
@@ -135,6 +140,10 @@ abstract class SoapBase implements SoapInterface
      */
     public $soaperror;
     /**
+     * @var int
+     */
+    public $soaperror_code;
+    /**
      * @var array
      */
     public $soapinfo = [];
@@ -142,7 +151,7 @@ abstract class SoapBase implements SoapInterface
      * @var int
      */
     public $waitingTime = 45;
-
+    
     /**
      * SoapBase constructor.
      * @param Certificate|null $certificate
@@ -199,7 +208,29 @@ abstract class SoapBase implements SoapInterface
     {
         return $this->disableCertValidation = $flag;
     }
-
+    
+    /**
+     * Force http protocol version
+     *
+     * @param null|string $version
+     */
+    public function httpVersion($version = null)
+    {
+        switch ($version) {
+            case '1.0':
+                $this->httpver = CURL_HTTP_VERSION_1_0;
+                break;
+            case '1.1':
+                $this->httpver = CURL_HTTP_VERSION_1_1;
+                break;
+            case '2.0':
+                $this->httpver = CURL_HTTP_VERSION_2_0;
+                break;
+            default:
+                $this->httpver = CURL_HTTP_VERSION_NONE;
+        }
+    }
+    
     /**
      * Load path to CA and enable to use on SOAP
      * @param string $capath
@@ -231,11 +262,17 @@ abstract class SoapBase implements SoapInterface
      */
     public function setTemporaryFolder($folderRealPath = null)
     {
+        $mapto = $this->certificate->getCnpj() ?? $this->certificate->getCpf();
+        if (empty($mapto)) {
+            throw new RuntimeException(
+                'Foi impossivel identificar o OID do CNPJ ou do CPF.'
+            );
+        }
         if (empty($folderRealPath)) {
             $path = '/sped-'
                 . $this->uid()
                 .'/'
-                . $this->certificate->getCnpj()
+                . $mapto
                 . '/' ;
             $folderRealPath = sys_get_temp_dir().$path;
         }

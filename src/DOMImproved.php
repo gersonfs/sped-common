@@ -170,16 +170,18 @@ class DOMImproved extends DOMDocument
         $descricao = '',
         $force = false
     ) {
-        if ($content === null || empty($name)) {
+        if (empty($name)) {
+            $this->errors[] = "O nome da TAG é Obrigatório!";
             return;
+        }
+        if (!$obrigatorio && $content === null) {
+            return;
+        } elseif ($obrigatorio && ($content === null || $content === '') && !$force) {
+            $this->errors[] = "Preenchimento Obrigatório! [$name] $descricao";
         }
         $content = (string) $content;
         $content = trim($content);
-        if ($obrigatorio && $content === '' && !$force) {
-            $this->errors[] = "Preenchimento Obrigatório! [$name] $descricao";
-        }
         if ($obrigatorio || $content !== '' || $force) {
-            $content = htmlspecialchars($content, ENT_QUOTES);
             $temp = $this->createElement($name, $content);
             $parent->appendChild($temp);
         }
@@ -188,16 +190,16 @@ class DOMImproved extends DOMDocument
     /**
      * Acrescenta DOMElement a pai DOMElement
      * Caso o pai esteja vazio retorna uma exception com a mensagem
-     * O parametro "child" pode ser vazio
+     * O parametro "child" pode ser null
      * @param DOMElement $parent
-     * @param DOMElement $child
+     * @param DOMElement|null $child
      * @param string $msg
      * @return void
      */
     public function appChild(DOMElement &$parent, DOMElement $child = null, $msg = '')
     {
         if (empty($child)) {
-            $this->errors[] = $msg;
+            //$this->errors[] = $msg;
             return;
         }
         $parent->appendChild($child);

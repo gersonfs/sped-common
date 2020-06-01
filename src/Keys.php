@@ -5,12 +5,13 @@ namespace NFePHP\Common;
 /**
  * Class to create and validate the identification keys of electronic documents
  * from SPED
+ * NT 2018.001 Emitente com CPF e IE
  * @category   NFePHP
  * @package    NFePHP\Common\Keys
- * @copyright  Copyright (c) 2008-2016
+ * @copyright  Copyright (c) 2008-2018
  * @license    http://www.gnu.org/licenses/lesser.html LGPL v3
- * @author     Roberto L. Machado <linux.rlm at gmail dot com>
- * @link       http://github.com/nfephp-org/nfephp for the canonical source repository
+ * @author     Roberto L. Machado <linux dot rlm at gmail dot com>
+ * @link       http://github.com/nfephp-org/sped-common for the canonical source repository
  */
 
 class Keys
@@ -20,7 +21,7 @@ class Keys
      * @param string $cUF UF number
      * @param string $ano year
      * @param string $mes month
-     * @param string $cnpj
+     * @param string $cnpj or CPF
      * @param string $mod model of document 55, 65, 57 etc
      * @param string $serie
      * @param string $numero document number
@@ -37,10 +38,15 @@ class Keys
         $serie,
         $numero,
         $tpEmis,
-        $codigo = ''
+        $codigo = null
     ) {
-        if ($codigo == '') {
-            $codigo = $numero;
+        if (empty($codigo)) {
+            $codigo = self::random();
+        }
+        //if a cpf with 11 digits is passed then complete with leading zeros
+        //up to the 14 digits
+        if (strlen($cnpj) < 14) {
+            $cnpj = str_pad($cnpj, 14, '0', STR_PAD_LEFT);
         }
         $format = "%02d%02d%02d%s%02d%03d%09d%01d%08d";
         $key = sprintf(
@@ -100,5 +106,41 @@ class Keys
             $vdigit = 0;
         }
         return (string) $vdigit;
+    }
+    
+    /**
+     * Generate and return a 8 digits random number
+     * for cNF tag
+     * @param string|null $nnf
+     * @return string
+     */
+    public static function random($nnf = null)
+    {
+        $loop = true;
+        while ($loop) {
+            $cnf = str_pad(mt_rand(0, 99999999), 8, '0', STR_PAD_LEFT);
+            $loop = !self::cNFIsValid($cnf);
+            if (!empty($nnf)) {
+                if (intval($cnf) === intval($nnf)) {
+                    $loop = true;
+                }
+            }
+        }
+        return $cnf;
+    }
+    
+    /**
+     * Verify if cNF number is valid NT2019.001
+     * @param string $cnf
+     */
+    public static function cNFIsValid($cnf)
+    {
+        $defs = [
+            '00000000', '11111111', '22222222', '33333333', '44444444',
+            '55555555', '66666666', '77777777', '88888888', '99999999',
+            '12345678', '23456789', '34567890', '45678901', '56789012',
+            '67890123', '78901234', '89012345', '90123456', '01234567'
+        ];
+        return !in_array($cnf, $defs);
     }
 }
