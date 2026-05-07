@@ -18,8 +18,9 @@ class CertificateTest extends \PHPUnit\Framework\TestCase
     {
         $certificate = Certificate::readPfx(file_get_contents(__DIR__ . self::TEST_PFX_FILE), 'associacao');
         $this->assertEquals('NFe - Associacao NF-e:99999090910270', $certificate->getCompanyName());
-        $this->assertEquals(new \DateTime('2009-05-22 17:07:03'), $certificate->getValidFrom());
-        $this->assertEquals(new \DateTime('2010-10-02 17:07:03'), $certificate->getValidTo());
+        $utc = new \DateTimeZone('UTC');
+        $this->assertEquals(new \DateTime('2009-05-22 17:07:03', $utc), $certificate->getValidFrom());
+        $this->assertEquals(new \DateTime('2010-10-02 17:07:03', $utc), $certificate->getValidTo());
         $this->assertTrue($certificate->isExpired());
         $dataSigned = $certificate->sign('nfe');
         $this->assertTrue($certificate->verify('nfe', $dataSigned));
@@ -34,8 +35,9 @@ class CertificateTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertInstanceOf(Certificate::class, $certificate);
         $this->assertEquals('NFe - Associacao NF-e:99999090910270', $certificate->getCompanyName());
-        $this->assertEquals(new \DateTime('2009-05-22 17:07:03'), $certificate->getValidFrom());
-        $this->assertEquals(new \DateTime('2010-10-02 17:07:03'), $certificate->getValidTo());
+        $utc = new \DateTimeZone('UTC');
+        $this->assertEquals(new \DateTime('2009-05-22 17:07:03', $utc), $certificate->getValidFrom());
+        $this->assertEquals(new \DateTime('2010-10-02 17:07:03', $utc), $certificate->getValidTo());
         $this->assertTrue($certificate->isExpired());
         $dataSigned = $certificate->sign('nfe');
         $this->assertTrue($certificate->verify('nfe', $dataSigned));
