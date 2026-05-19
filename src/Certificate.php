@@ -71,7 +71,7 @@ class Certificate implements SignatureInterface, VerificationInterface
                 $chain .= $ec;
             }
         }
-        return new self(
+        return new static(
             new PrivateKey($certs['pkey']),
             new PublicKey($certs['cert']),
             new CertificationChain($chain)

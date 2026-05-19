@@ -16,29 +16,29 @@ class CertificateException extends \RuntimeException implements ExceptionInterfa
 {
     public static function unableToRead()
     {
-        return new self('Impossivel ler o certificado, ' . static::getOpenSSLError());
+        return new static('Impossivel ler o certificado, ' . static::getOpenSSLError());
     }
 
     public static function unableToOpen()
     {
-        return new self('Impossivel abrir o certificado, ' . static::getOpenSSLError());
+        return new static('Impossivel abrir o certificado, ' . static::getOpenSSLError());
     }
 
     public static function signContent()
     {
-        return new self(
+        return new static(
             'Ocorreu um erro inesperado durante o processo de assinatura, ' . static::getOpenSSLError()
         );
     }
 
     public static function getPrivateKey()
     {
-        return new self('Ocorreu um erro ao recuperar a chave privada, ' . static::getOpenSSLError());
+        return new static('Ocorreu um erro ao recuperar a chave privada, ' . static::getOpenSSLError());
     }
 
     public static function signatureFailed()
     {
-        return new self(
+        return new static(
             'Ocorreu um erro enquento verificava a assinatura, ' . static::getOpenSSLError()
         );
     }

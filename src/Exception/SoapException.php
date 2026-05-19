@@ -17,13 +17,13 @@ class SoapException extends \RuntimeException implements ExceptionInterface
 {
     public static function unableToLoadCurl($message)
     {
-        return new self("Impossivel carregar cURL, "
+        return new static("Impossivel carregar cURL, "
             . "verifique se libcurl foi instalada. $message");
     }
 
     public static function soapFault($message, $code)
     {
-        return new self("Erro de comunicação "
+        return new static("Erro de comunicação "
             . "via soap,  $message", $code);
     }
 }

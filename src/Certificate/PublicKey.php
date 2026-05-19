@@ -85,7 +85,7 @@ class PublicKey implements VerificationInterface
 
 CONTENT;
 
-        return new self($certificate);
+        return new static($certificate);
     }
 
     /**
