@@ -8,3 +8,10 @@ parameters:
     # OpenSSL classes que ainda não existiam, etc.). Em versões mais novas elas
     # naturalmente não se aplicam.
     reportUnmatchedIgnoredErrors: false
+    # No PHP 7.4 o PHPStan considera o variadic de SoapClientExtended::__doRequest
+    # como incompatível com o parâmetro $oneWay do pai, e marca esse erro como
+    # não-ignorável — exige excludePaths. Em runtime PHP 7.4 aceita a chamada;
+    # nas demais versões o arquivo continua sendo analisado normalmente.
+    excludePaths:
+        analyseAndScan:
+            - src/Soap/SoapClientExtended.php

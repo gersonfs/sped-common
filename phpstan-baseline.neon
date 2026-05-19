@@ -70,10 +70,3 @@ parameters:
 			count: 1
 			path: src/Soap/SoapCurl.php
 
-		# Variadic do __doRequest é a forma cross-version de tolerar a mudança
-		# de $oneWay (int em PHP < 8.5, bool em 8.5+) e o novo $uriParserClass
-		# do 8.5. Em runtime o PHP 7.4 aceita; o PHPStan dessa versão não.
-		-
-			message: "#^Parameter \\#5 \\$rest of method NFePHP\\\\Common\\\\Soap\\\\SoapClientExtended\\:\\:__doRequest\\(\\) is variadic but parameter \\#5 \\$oneWay of method SoapClient\\:\\:__doRequest\\(\\) is not variadic\\.$#"
-			count: 1
-			path: src/Soap/SoapClientExtended.php
