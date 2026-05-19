@@ -22,29 +22,31 @@ class SoapClientExtended extends SoapClient
      * suffixes and line breaks that are not supported by some webservices
      * due to their particular settings.
      *
-     * Mantém apenas os 4 parâmetros estáveis em toda a história do
-     * SoapClient e usa um variadic para acomodar tudo a partir do 5º
-     * (que mudou de int para bool entre PHP 7.4 e 8.5, e ganhou
-     * $uriParserClass no PHP 8.5). Isso evita conflito de variância
-     * entre versões.
+     * Os parâmetros 5 e 6 ficam SEM type hint para tolerar três variações
+     * do SoapClient::__doRequest entre versões:
+     *  - PHP 7.4: $one_way = NULL (sem tipo)
+     *  - PHP < 8.5: bool $oneWay = false (5 parâmetros)
+     *  - PHP 8.5+: bool $oneWay = false, ?string $uriParserClass = null (6 parâmetros)
      *
      * @param string $request
      * @param string $location
      * @param string $action
      * @param int $version
-     * @param mixed ...$rest
+     * @param mixed $oneWay
+     * @param mixed $uriParserClass
      * @return string|null
      */
     #[\ReturnTypeWillChange]
-    public function __doRequest($request, $location, $action, $version, ...$rest)
+    public function __doRequest($request, $location, $action, $version, $oneWay = false, $uriParserClass = null)
     {
         $search = [":ns1","ns1:","\n","\r"];
-        return parent::__doRequest(
-            str_replace($search, '', $request),
-            $location,
-            $action,
-            $version,
-            ...$rest
-        );
+        $cleanRequest = str_replace($search, '', $request);
+        // O 6º parâmetro só existe a partir do PHP 8.5. Em versões anteriores
+        // passar um argumento extra à parent quebra; por isso decidimos aqui.
+        if ($uriParserClass === null) {
+            return parent::__doRequest($cleanRequest, $location, $action, $version, (bool) $oneWay);
+        }
+        /** @phpstan-ignore-next-line arguments.count (parent ganhou um 6º arg só no PHP 8.5; stub do PHPStan ainda não cobre) */
+        return parent::__doRequest($cleanRequest, $location, $action, $version, (bool) $oneWay, $uriParserClass);
     }
 }
