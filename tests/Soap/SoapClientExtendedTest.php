@@ -16,18 +16,17 @@ class SoapClientExtendedTest extends TestCase
     }
 
     /**
-     * O parâmetro $oneWay precisa ser bool para combinar com a assinatura
-     * de SoapClient::__doRequest (que mudou para bool em versões recentes do PHP)
-     * e evitar Fatal error de incompatibilidade de assinatura. Um variadic
-     * final acomoda parâmetros adicionais introduzidos pelo PHP 8.5+.
+     * Para sobreviver às mudanças do SoapClient::__doRequest entre versões
+     * (int -> bool no PHP 8.5, novo parâmetro $uriParserClass também no 8.5),
+     * a classe filha mantém apenas os 4 primeiros parâmetros e captura o
+     * restante via variadic.
      */
     public function testDoRequestSignatureIsCompatible()
     {
         $params = (new ReflectionMethod(SoapClientExtended::class, '__doRequest'))->getParameters();
-        $this->assertCount(6, $params);
-        $this->assertSame('oneWay', $params[4]->getName());
-        $this->assertTrue($params[4]->isOptional());
-        $this->assertSame(false, $params[4]->getDefaultValue());
-        $this->assertTrue($params[5]->isVariadic());
+        $this->assertCount(5, $params);
+        $this->assertSame('request', $params[0]->getName());
+        $this->assertSame('version', $params[3]->getName());
+        $this->assertTrue($params[4]->isVariadic());
     }
 }

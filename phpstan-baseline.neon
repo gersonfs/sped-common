@@ -1,2 +1,46 @@
 parameters:
-	ignoreErrors: []
+	ignoreErrors:
+		# Stubs do PHP 7.4 ainda não conhecem essas classes do OpenSSL.
+		-
+			message: "#^Property NFePHP\\\\Common\\\\Certificate\\\\PrivateKey\\:\\:\\$resource \\(array\\|OpenSSLAsymmetricKey\\|OpenSSLCertificate\\|string\\) does not accept resource\\.$#"
+			count: 1
+			path: src/Certificate/PrivateKey.php
+
+		-
+			message: "#^Property NFePHP\\\\Common\\\\Certificate\\\\PrivateKey\\:\\:\\$resource has unknown class OpenSSLAsymmetricKey as its type\\.$#"
+			count: 1
+			path: src/Certificate/PrivateKey.php
+
+		-
+			message: "#^Property NFePHP\\\\Common\\\\Certificate\\\\PrivateKey\\:\\:\\$resource has unknown class OpenSSLCertificate as its type\\.$#"
+			count: 1
+			path: src/Certificate/PrivateKey.php
+
+		# Stubs antigos do PHPStan não declaram as props públicas de SoapHeader.
+		-
+			message: "#^Access to an undefined property SoapHeader\\:\\:\\$data\\.$#"
+			count: 1
+			path: src/Soap/SoapBase.php
+
+		-
+			message: "#^Access to an undefined property SoapHeader\\:\\:\\$name\\.$#"
+			count: 2
+			path: src/Soap/SoapBase.php
+
+		-
+			message: "#^Access to an undefined property SoapHeader\\:\\:\\$namespace\\.$#"
+			count: 1
+			path: src/Soap/SoapBase.php
+
+		# Em PHP 7.4, openssl_pkey_export ainda exige resource; a classe PrivateKey
+		# implementa __toString, então a chamada continua funcional em runtime.
+		-
+			message: "#^Parameter \\#1 \\$key of function openssl_pkey_export expects resource, NFePHP\\\\Common\\\\Certificate\\\\PrivateKey given\\.$#"
+			count: 1
+			path: src/Soap/SoapBase.php
+
+		# CurlHandle só existe a partir do PHP 8.0; mantemos o type hint p/ versões novas.
+		-
+			message: "#^Parameter \\$oCurl of method NFePHP\\\\Common\\\\Soap\\\\SoapCurl\\:\\:setCurlProxy\\(\\) has invalid type CurlHandle\\.$#"
+			count: 1
+			path: src/Soap/SoapCurl.php

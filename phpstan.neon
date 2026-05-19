@@ -4,3 +4,7 @@ includes:
 parameters:
     level: 5
     treatPhpDocTypesAsCertain: false
+    # As entradas do baseline são específicas do PHP 7.4 (stubs antigos do PHPStan,
+    # OpenSSL classes que ainda não existiam, etc.). Em versões mais novas elas
+    # naturalmente não se aplicam.
+    reportUnmatchedIgnoredErrors: false

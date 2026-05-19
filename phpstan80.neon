@@ -4,3 +4,6 @@ includes:
 parameters:
     level: 5
     treatPhpDocTypesAsCertain: false
+    # As entradas do baseline são específicas do PHP 8.0 (stubs antigos do PHPStan).
+    # Em versões mais novas elas naturalmente não se aplicam.
+    reportUnmatchedIgnoredErrors: false

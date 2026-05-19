@@ -22,20 +22,21 @@ class SoapClientExtended extends SoapClient
      * suffixes and line breaks that are not supported by some webservices
      * due to their particular settings.
      *
-     * Usa variadic ($extra) para acomodar parâmetros adicionais que versões
-     * mais novas do PHP introduzem em SoapClient::__doRequest (ex.: o
-     * $uriParserClass surgido no PHP 8.5).
+     * Mantém apenas os 4 parâmetros estáveis em toda a história do
+     * SoapClient e usa um variadic para acomodar tudo a partir do 5º
+     * (que mudou de int para bool entre PHP 7.4 e 8.5, e ganhou
+     * $uriParserClass no PHP 8.5). Isso evita conflito de variância
+     * entre versões.
      *
      * @param string $request
      * @param string $location
      * @param string $action
      * @param int $version
-     * @param bool $oneWay
-     * @param mixed ...$extra
+     * @param mixed ...$rest
      * @return string|null
      */
     #[\ReturnTypeWillChange]
-    public function __doRequest($request, $location, $action, $version, $oneWay = false, ...$extra)
+    public function __doRequest($request, $location, $action, $version, ...$rest)
     {
         $search = [":ns1","ns1:","\n","\r"];
         return parent::__doRequest(
@@ -43,8 +44,7 @@ class SoapClientExtended extends SoapClient
             $location,
             $action,
             $version,
-            (bool) $oneWay,
-            ...$extra
+            ...$rest
         );
     }
 }

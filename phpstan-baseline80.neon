@@ -1,2 +1,17 @@
 parameters:
-	ignoreErrors: []
+	ignoreErrors:
+		# Stubs antigos do PHPStan não declaram as props públicas de SoapHeader.
+		-
+			message: "#^Access to an undefined property SoapHeader\\:\\:\\$data\\.$#"
+			count: 1
+			path: src/Soap/SoapBase.php
+
+		-
+			message: "#^Access to an undefined property SoapHeader\\:\\:\\$name\\.$#"
+			count: 2
+			path: src/Soap/SoapBase.php
+
+		-
+			message: "#^Access to an undefined property SoapHeader\\:\\:\\$namespace\\.$#"
+			count: 1
+			path: src/Soap/SoapBase.php
