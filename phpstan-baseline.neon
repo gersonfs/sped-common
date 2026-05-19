@@ -1,10 +1,17 @@
 parameters:
 	ignoreErrors:
-		# new static() nas Exception factories: @phpstan-consistent-constructor
-		# não é suficiente aqui porque o __construct é herdado de \RuntimeException
-		# e a regra NewStaticRule olha para `$constructor->getDeclaringClass()`.
-		# Em Certificate/PublicKey o __construct é declarado localmente, então a
-		# annotation funciona e essas classes ficam fora do baseline.
+		# new static() em factories. A política do projeto é manter o late static
+		# binding (sem trocar por new self() nem usar annotations no código fonte).
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Certificate.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Certificate/PublicKey.php
+
 		-
 			message: "#^Unsafe usage of new static\\(\\)\\.$#"
 			count: 5

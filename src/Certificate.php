@@ -19,9 +19,6 @@ use NFePHP\Common\Certificate\SignatureInterface;
 use NFePHP\Common\Certificate\VerificationInterface;
 use NFePHP\Common\Exception\CertificateException;
 
-/**
- * @phpstan-consistent-constructor
- */
 class Certificate implements SignatureInterface, VerificationInterface
 {
     /**

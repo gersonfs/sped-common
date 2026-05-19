@@ -14,9 +14,6 @@ namespace NFePHP\Common\Certificate;
 
 use NFePHP\Common\Exception\CertificateException;
 
-/**
- * @phpstan-consistent-constructor
- */
 class PublicKey implements VerificationInterface
 {
     /**

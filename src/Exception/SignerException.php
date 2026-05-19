@@ -10,7 +10,6 @@ namespace NFePHP\Common\Exception;
  * @author     Roberto L. Machado <linux.rlm at gmail dot com>
  * @link       http://github.com/nfephp-org/sped-common for the canonical source repository
  *
- * @phpstan-consistent-constructor
  */
 
 class SignerException extends \RuntimeException implements ExceptionInterface
