@@ -119,8 +119,8 @@ interface SoapInterface
      * @param int $soapver
      * @param array $parameters
      * @param array $namespaces
-     * @param \SoapHeader $soapheader
      * @param string $request
+     * @param \SoapHeader|null $soapheader
      */
     public function send(
         $url,

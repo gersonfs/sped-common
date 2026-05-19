@@ -11,6 +11,13 @@ use NFePHP\Common\Keys;
 use NFePHP\Common\Tags\TagInterface;
 use DOMElement;
 
+/**
+ * Subclasses populam dinamicamente propriedades baseadas em {@see $available}
+ * (ide, emit, infnfe, det, etc.). As três abaixo são as únicas referenciadas
+ * diretamente em checkIdKey() e portanto declaradas explicitamente. As demais
+ * são acomodadas pelo AllowDynamicProperties.
+ */
+#[\AllowDynamicProperties]
 abstract class MakeBase
 {
     /**
@@ -41,6 +48,22 @@ abstract class MakeBase
      * @var array
      */
     protected $available = [];
+    /**
+     * Propriedades dinâmicas referenciadas em checkIdKey(). Subclasses populam
+     * estas com instâncias de Tag específicas (com std stdClass acoplado),
+     * por isso ficam tipadas como mixed para tolerar o acesso a ->std->X.
+     *
+     * @var mixed
+     */
+    public $emit;
+    /**
+     * @var mixed
+     */
+    public $ide;
+    /**
+     * @var mixed
+     */
+    public $infnfe;
 
     /**
      * Constructor
@@ -95,7 +118,7 @@ abstract class MakeBase
         $c = $this->loadTagClass($className, $arguments);
         if ($this->available[$realname]['type'] == 'multiple') {
             if (!isset($this->$propname)) {
-                $this->createProperty($propname, []);
+                $this->{$propname} = [];
             }
             array_push($this->$propname, $c);
         } else {
@@ -152,7 +175,7 @@ abstract class MakeBase
             $this->ide->std->cnf
         );
         $infid = str_replace($this->rootname, '', $this->infnfe->std->id);
-        if ($buildId != $infId) {
+        if ($buildId != $infid) {
             $this->infnfe->std->id = "{$this->rootname}{$buildId}";
             $this->ide->std->cdv = substr($buildId, -1);
         }

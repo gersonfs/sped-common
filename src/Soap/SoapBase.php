@@ -94,9 +94,9 @@ abstract class SoapBase implements SoapInterface
      */
     protected $disableCertValidation = false;
     /**
-     * @var Files
+     * @var Files|null
      */
-    protected $filesystem;
+    protected $filesystem = null;
     /**
      * @var string
      */
@@ -308,10 +308,9 @@ abstract class SoapBase implements SoapInterface
     protected function uid()
     {
         if (function_exists('posix_getuid')) {
-            return posix_getuid();
-        } else {
-            return getmyuid();
+            return (string) posix_getuid();
         }
+        return (string) getmyuid();
     }
 
     /**
@@ -400,7 +399,7 @@ abstract class SoapBase implements SoapInterface
      * @param array $parameters
      * @param array $namespaces
      * @param string $request
-     * @param null $soapheader
+     * @param \SoapHeader|null $soapheader
      * @return mixed
      */
     abstract public function send(
@@ -570,7 +569,7 @@ abstract class SoapBase implements SoapInterface
         if (!$this->filesystem->has($name)) {
             return $name;
         }
-        $this->randomName($n + 5);
+        return $this->randomName($n + 5);
     }
 
     /**
@@ -588,7 +587,7 @@ abstract class SoapBase implements SoapInterface
             $this->filesystem->delete($this->prifile);
             $this->filesystem->delete($this->pubfile);
             //remove todos os arquivos antigos
-            $contents = $this->filesystem->listContents($this->certsdir, true);
+            $contents = $this->filesystem->listContents($this->certsdir);
             $dt = new \DateTime();
             $tint = new \DateInterval("PT" . $this->waitingTime . "M");
             $tint->invert = 1;

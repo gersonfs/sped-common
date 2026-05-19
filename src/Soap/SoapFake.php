@@ -31,6 +31,17 @@ class SoapFake extends SoapBase implements SoapInterface
         parent::__construct($certificate);
     }
 
+    /**
+     * @param string $url
+     * @param string $operation
+     * @param string $action
+     * @param int $soapver
+     * @param array $parameters
+     * @param array $namespaces
+     * @param string $request
+     * @param \SoapHeader|null $soapheader
+     * @return string
+     */
     public function send(
         $url,
         $operation = '',

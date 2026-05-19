@@ -49,7 +49,7 @@ class SoapNative extends SoapBase implements SoapInterface
      * @param array $parameters
      * @param array $namespaces
      * @param string $request
-     * @param \SoapHeader $soapheader
+     * @param \SoapHeader|null $soapheader
      * @return string
      * @throws SoapException
      */
@@ -79,9 +79,9 @@ class SoapNative extends SoapBase implements SoapInterface
                 $this->responseHead . "\n" . $this->responseBody
             );
         } catch (SoapFault $e) {
-            throw SoapException::soapFault("[$url] " . $e->getMessage());
+            throw SoapException::soapFault("[$url] " . $e->getMessage(), (int) $e->getCode());
         } catch (\Exception $e) {
-            throw SoapException::soapFault("[$url] " . $e->getMessage());
+            throw SoapException::soapFault("[$url] " . $e->getMessage(), (int) $e->getCode());
         }
         return $this->responseBody;
     }
@@ -119,9 +119,9 @@ class SoapNative extends SoapBase implements SoapInterface
         try {
             $this->connection = new SoapClientExtended($wsdl, $params);
         } catch (SoapFault $e) {
-            throw SoapException::soapFault($e->getMessage());
+            throw SoapException::soapFault($e->getMessage(), (int) $e->getCode());
         } catch (\Exception $e) {
-            throw SoapException::soapFault($e->getMessage());
+            throw SoapException::soapFault($e->getMessage(), (int) $e->getCode());
         }
     }
 

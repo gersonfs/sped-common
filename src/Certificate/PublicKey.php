@@ -14,6 +14,9 @@ namespace NFePHP\Common\Certificate;
 
 use NFePHP\Common\Exception\CertificateException;
 
+/**
+ * @phpstan-consistent-constructor
+ */
 class PublicKey implements VerificationInterface
 {
     /**
@@ -82,7 +85,7 @@ class PublicKey implements VerificationInterface
 
 CONTENT;
 
-        return new static($certificate);
+        return new self($certificate);
     }
 
     /**

@@ -9,19 +9,21 @@ namespace NFePHP\Common\Exception;
  * @license    http://www.gnu.org/licenses/lesser.html LGPL v3
  * @author     Roberto L. Machado <linux.rlm at gmail dot com>
  * @link       http://github.com/nfephp-org/sped-common for the canonical source repository
+ *
+ * @phpstan-consistent-constructor
  */
 
 class SoapException extends \RuntimeException implements ExceptionInterface
 {
     public static function unableToLoadCurl($message)
     {
-        return new static("Impossivel carregar cURL, "
+        return new self("Impossivel carregar cURL, "
             . "verifique se libcurl foi instalada. $message");
     }
 
     public static function soapFault($message, $code)
     {
-        return new static("Erro de comunicação "
+        return new self("Erro de comunicação "
             . "via soap,  $message", $code);
     }
 }

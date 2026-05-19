@@ -9,6 +9,8 @@ namespace NFePHP\Common\Exception;
  * @license    http://www.gnu.org/licenses/lesser.html LGPL v3
  * @author     Roberto L. Machado <linux.rlm at gmail dot com>
  * @link       http://github.com/nfephp-org/sped-common for the canonical source repository
+ *
+ * @phpstan-consistent-constructor
  */
 
 class ValidatorException extends \RuntimeException implements ExceptionInterface
@@ -19,11 +21,11 @@ class ValidatorException extends \RuntimeException implements ExceptionInterface
         foreach ($errors as $error) {
             $msg .= $error . "\n";
         }
-        return new static('Este XML não é válido. ' . $msg);
+        return new self('Este XML não é válido. ' . $msg);
     }
 
     public static function isNotXml()
     {
-        return new static('A string passada não é um XML');
+        return new self('A string passada não é um XML');
     }
 }

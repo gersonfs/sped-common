@@ -161,9 +161,9 @@ class Asn1
         $npart = count($partes);
         for ($num = 0; $num < $npart; $num++) {
             if ($num == 0) {
-                $bun = 40 * $partes[$num];
+                $bun = 40 * (int) $partes[$num];
             } elseif ($num == 1) {
-                $bun +=  $partes[$num];
+                $bun += (int) $partes[$num];
                 $abBinary[] = $bun;
             } else {
                 $abBinary = self::xBase128($abBinary, (int) $partes[$num], true);
@@ -187,7 +187,7 @@ class Asn1
     {
         $abc = $abIn;
         if ($qIn > 127) {
-            $abc = self::xBase128($abc, floor($qIn / 128), false);
+            $abc = self::xBase128($abc, intdiv($qIn, 128), false);
         }
         $qIn2 = $qIn % 128;
         if ($flag) {

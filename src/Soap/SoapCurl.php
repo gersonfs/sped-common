@@ -42,7 +42,7 @@ class SoapCurl extends SoapBase implements SoapInterface
      * @param array $parameters
      * @param array $namespaces
      * @param string $request
-     * @param \SoapHeader $soapheader
+     * @param \SoapHeader|null $soapheader
      * @return string
      * @throws \NFePHP\Common\Exception\SoapException
      */

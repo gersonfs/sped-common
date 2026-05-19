@@ -19,6 +19,9 @@ use NFePHP\Common\Certificate\SignatureInterface;
 use NFePHP\Common\Certificate\VerificationInterface;
 use NFePHP\Common\Exception\CertificateException;
 
+/**
+ * @phpstan-consistent-constructor
+ */
 class Certificate implements SignatureInterface, VerificationInterface
 {
     /**
@@ -68,7 +71,7 @@ class Certificate implements SignatureInterface, VerificationInterface
                 $chain .= $ec;
             }
         }
-        return new static(
+        return new self(
             new PrivateKey($certs['pkey']),
             new PublicKey($certs['cert']),
             new CertificationChain($chain)
