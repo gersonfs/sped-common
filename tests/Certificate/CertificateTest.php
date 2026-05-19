@@ -43,6 +43,62 @@ class CertificateTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($certificate->verify('nfe', $dataSigned));
     }
 
+    /**
+     * Garante que getValidFrom()/getValidTo() devolvem o MESMO instante absoluto
+     * gravado no PFX, independentemente do timezone default do PHP.
+     *
+     * O arquivo PFX guarda as datas em UTC ("...Z"). O openssl_x509_parse expõe esse
+     * instante via validFrom_time_t/validTo_time_t (epoch UTC), que é a fonte de verdade.
+     * Antes da correção, createFromFormat ignorava o "Z" e usava a tz default do PHP,
+     * fazendo o instante absoluto variar conforme o servidor.
+     */
+    public function testGetValidFromAndValidToReturnSameInstantAsPfxRegardlessOfDefaultTimezone()
+    {
+        $pfxContent = file_get_contents(__DIR__ . self::TEST_PFX_FILE);
+
+        // Fonte de verdade: lê direto do PFX via openssl.
+        openssl_pkcs12_read($pfxContent, $certs, 'associacao');
+        $detail = openssl_x509_parse($certs['cert']);
+
+        // Sanity check: o PFX de teste declara estas datas em UTC.
+        $this->assertSame('090522170703Z', $detail['validFrom']);
+        $this->assertSame('101002170703Z', $detail['validTo']);
+        $this->assertSame(1243012023, $detail['validFrom_time_t']); // 2009-05-22 17:07:03 UTC
+        $this->assertSame(1286039223, $detail['validTo_time_t']);   // 2010-10-02 17:07:03 UTC
+
+        $originalTz = date_default_timezone_get();
+        try {
+            // Simula um servidor em São Paulo (UTC-3) — onde o bug aparecia.
+            date_default_timezone_set('America/Sao_Paulo');
+
+            $certificate = Certificate::readPfx($pfxContent, 'associacao');
+
+            // O instante absoluto retornado deve bater com o epoch do PFX.
+            $this->assertSame(
+                $detail['validFrom_time_t'],
+                $certificate->getValidFrom()->getTimestamp(),
+                'getValidFrom() deve devolver o mesmo instante absoluto gravado no PFX'
+            );
+            $this->assertSame(
+                $detail['validTo_time_t'],
+                $certificate->getValidTo()->getTimestamp(),
+                'getValidTo() deve devolver o mesmo instante absoluto gravado no PFX'
+            );
+
+            // E, em UTC, deve formatar exatamente como o "Z" do PFX.
+            $this->assertSame(
+                '2009-05-22 17:07:03',
+                $certificate->getValidFrom()->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d H:i:s')
+            );
+            $this->assertSame(
+                '2010-10-02 17:07:03',
+                $certificate->getValidTo()->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d H:i:s')
+            );
+        } finally {
+            date_default_timezone_set($originalTz);
+        }
+    }
+
     public function testShouldGetExceptionWhenLoadPfxCertificate()
     {
         $this->expectException(\NFePHP\Common\Exception\CertificateException::class);
