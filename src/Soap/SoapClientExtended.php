@@ -41,12 +41,15 @@ class SoapClientExtended extends SoapClient
     {
         $search = [":ns1","ns1:","\n","\r"];
         $cleanRequest = str_replace($search, '', $request);
-        // O 6º parâmetro só existe a partir do PHP 8.5. Em versões anteriores
-        // passar um argumento extra à parent quebra; por isso decidimos aqui.
-        if ($uriParserClass === null) {
-            return parent::__doRequest($cleanRequest, $location, $action, $version, (bool) $oneWay);
+        // O tipo do 5º parâmetro do SoapClient::__doRequest mudou entre versões
+        // (int no PHP 7.4, bool no PHP 8.x) e o 6º parâmetro só existe a partir
+        // do PHP 8.5. Resolvemos via reflexão dinâmica para evitar incompatibilidade
+        // tanto em runtime quanto nos diferentes stubs do PHPStan.
+        $args = [$cleanRequest, $location, $action, $version, $oneWay];
+        if ($uriParserClass !== null) {
+            $args[] = $uriParserClass;
         }
-        /** @phpstan-ignore-next-line arguments.count (parent ganhou um 6º arg só no PHP 8.5; stub do PHPStan ainda não cobre) */
-        return parent::__doRequest($cleanRequest, $location, $action, $version, (bool) $oneWay, $uriParserClass);
+        $parentMethod = new \ReflectionMethod(\SoapClient::class, '__doRequest');
+        return $parentMethod->invokeArgs($this, $args);
     }
 }
