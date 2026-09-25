@@ -5,10 +5,10 @@
     <arg name="extensions" value="php"/>
     <config name="testVersion" value="7.4-"/>
 
-    <config name="installed_paths" value="vendor/phpcompatibility/php-compatibility" />
-
     <rule  ref="PSR12">
         <exclude name="PSR12.Properties.ConstantVisibility.NotFound"/>
     </rule>
+
+    <rule ref="PHPCompatibility"/>
 
 </ruleset>
